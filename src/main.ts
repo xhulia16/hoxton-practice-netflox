@@ -13,14 +13,12 @@ type Comment = string
 type State = {
   movieList: Movie[],
   selectedMovie: Movie | null,
-  newComment: Comment | null
 }
 
 
 let state: State = {
   movieList: [],
-  selectedMovie: null,
-  newComment: null
+  selectedMovie: null
 }
 
 window.state = state
@@ -37,18 +35,43 @@ window.state = state
 //  <h3>Comment 1</h3>
 //</div>
 //</div>
-function getMoviedata(){
+function getMoviedata() {
   fetch('http://localhost:3005/movieList')
-  .then(resp => resp.json())
-  .then(dataFromServer => {
-    state.movieList=dataFromServer
-  render()
-  })
+    .then(resp => resp.json())
+    .then(dataFromServer => {
+      state.movieList = dataFromServer
+      render()
+    })
 }
 
-function postNewMovie(){
-  fetch('http://localhost:3005/movieList')
+function renderNewMovie() {
+  let mainEl = document.querySelector('#app')
+  if (mainEl === null) return
+
+  let movieForm = document.createElement('form')
+
+  let titleInput = document.createElement('input')
+  titleInput.name = 'title'
+  titleInput.placeholder = 'Add movie title'
+
+  let thumbnailInput = document.createElement('input')
+  thumbnailInput.name = 'thumbnail'
+  thumbnailInput.placeholder = 'Add thumbnail link'
+
+  let descriptionInput = document.createElement('input')
+  descriptionInput.name = 'description'
+  descriptionInput.placeholder = 'Add movie description'
+
+  let formMoviebtn = document.createElement('button')
+  formMoviebtn.type = 'submit'
+  formMoviebtn.textContent = 'submit'
+
+  movieForm.append(titleInput, thumbnailInput, descriptionInput, formMoviebtn)
+  mainEl.append(movieForm)
+
+
 }
+
 getMoviedata()
 
 function renderHeader() {
@@ -155,6 +178,8 @@ function render() {
   mainEl.textContent = ''
 
   renderHeader()
+
+  renderNewMovie()
 
   if (state.selectedMovie === null) renderMovieList()
   else renderMovieDetails()
