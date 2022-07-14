@@ -1,14 +1,18 @@
 import './style.css'
 
-type Movie=[{
+type Movie = {
   id: number,
   title: string,
-  thumbnail: string, 
-  description: string, 
-  comment: string, 
-}]
+  thumbnail: string,
+  description: string,
+  comment: string,
+}
+type State = {
+  movieList: Movie[],
+  selectedMovie: Movie | null
+}
 
-let state = {
+let state: State = {
   movieList: [{
     id: 1,
     title: 'Title1',
@@ -38,7 +42,7 @@ let state = {
     comment: 'comment1'
   }
   ],
-  selectedMovie:[]
+  selectedMovie: null
 }
 
 //<h1 class="title">NETFLOX</h1>
@@ -54,15 +58,21 @@ let state = {
 //</div>
 //</div>
 
-function renderMovieList() {
+function renderHeader() {
   let mainEl = document.querySelector('#app')
   if (mainEl === null) return
-  mainEl.textContent = ''
-
 
   let websiteTitleEl = document.createElement('h1')
   websiteTitleEl.className = 'title'
   websiteTitleEl.textContent = "NETFLOX"
+
+  mainEl.append(websiteTitleEl)
+}
+function renderMovieList() {
+  let mainEl = document.querySelector('#app')
+  if (mainEl === null) return
+
+
 
   let movieListEl = document.createElement('div')
   movieListEl.className = 'movieList'
@@ -77,10 +87,9 @@ function renderMovieList() {
 
     let movieThumbnailEl = document.createElement('img')
     movieThumbnailEl.src = item.thumbnail
-    movieThumbnailEl.addEventListener('click', function(){
-      state.selectedMovie.push(item)
-      console.log(state.selectedMovie)
-      renderMovieDetails()
+    movieThumbnailEl.addEventListener('click', function () {
+      state.selectedMovie = item
+      render()
     })
 
     let movieDescriptionEl = document.createElement('p')
@@ -94,28 +103,29 @@ function renderMovieList() {
     movieEl.append(movieTitleEl, movieThumbnailEl, movieDescriptionEl, movieCommentList)
     movieListEl.append(movieEl)
 
-    mainEl.append(websiteTitleEl, movieListEl)
+    mainEl.append(movieListEl)
   }
 }
 
 function renderMovieDetails() {
   let mainEl = document.querySelector('#app')
   if (mainEl === null) return
-  mainEl.textContent = ''
-  
+  if(state.selectedMovie === null) return
 
- let movieDiv=document.createElement('div')
+
+  let movieDiv = document.createElement('div')
 
   let movieImgEl = document.createElement('img')
-  movieImgEl.src = "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/action-movie-poster-template-design-0f5fff6262fdefb855e3a9a3f0fdd361_screen.jpg?ts=1636996054"
-  
-  let otherMovieDetails = document.createElement('p')
-  otherMovieDetails.textContent = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem, libero necessitatibus aut in sint ipsa laborum, aperiam, sed natus reprehenderit enim. Voluptatem ipsam illum atque repellendus non possimus voluptatum illo'
+  movieImgEl.src = state.selectedMovie.thumbnail
 
-  let goHomebtn=document.createElement('button')
-  goHomebtn.textContent='Home'
-  goHomebtn.addEventListener('click', function(){
-    renderMovieList()
+  let otherMovieDetails = document.createElement('p')
+  otherMovieDetails.textContent = state.selectedMovie.description
+
+  let goHomebtn = document.createElement('button')
+  goHomebtn.textContent = 'Home'
+  goHomebtn.addEventListener('click', function () {
+    state.selectedMovie=null
+    render()
   })
 
   movieDiv.append(movieImgEl, otherMovieDetails)
@@ -123,7 +133,15 @@ function renderMovieDetails() {
 }
 
 function render() {
-renderMovieList()
+  let mainEl = document.querySelector('#app')
+  if (mainEl === null) return
+  mainEl.textContent = ''
+
+  renderHeader()
+
+  if (state.selectedMovie === null) renderMovieList()
+  else renderMovieDetails()
+
 }
 
 render()
