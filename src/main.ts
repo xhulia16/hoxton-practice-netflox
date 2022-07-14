@@ -46,6 +46,9 @@ function getMoviedata(){
   })
 }
 
+function postNewMovie(){
+  fetch('http://localhost:3005/movieList')
+}
 getMoviedata()
 
 function renderHeader() {
