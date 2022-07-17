@@ -5,7 +5,7 @@ type Movie = {
   title: string,
   thumbnail: string,
   description: string,
-  comments: Comment[],
+  comments: Comment[]
 }
 
 type Comment = string
@@ -44,12 +44,43 @@ function getMoviedata() {
     })
 }
 
+function postMovie(title: string, thumbnail: string, description: string, comment: string) {
+  let url = 'http://localhost:3005/movieList'
+
+  let options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      title: title,
+      thumbnail: thumbnail,
+      description: description,
+      comment: comment
+    })
+  }
+  fetch(url, options)
+    .then(resp => resp.json())
+    .then(newMovie => {
+      state.movieList.push(newMovie)
+      render()
+    })
+    .catch(response => {
+      console.log(response);
+    });
+}
+
 function renderNewMovie() {
   let mainEl = document.querySelector('#app')
   if (mainEl === null) return
 
   let movieForm = document.createElement('form')
+  movieForm.addEventListener('submit', function (event) {
+    event.preventDefault()
+    postMovie(titleInput.value, thumbnailInput.value, descriptionInput.value, commentInput.value)
+    render()
 
+  })
   let titleInput = document.createElement('input')
   titleInput.name = 'title'
   titleInput.placeholder = 'Add movie title'
@@ -62,17 +93,22 @@ function renderNewMovie() {
   descriptionInput.name = 'description'
   descriptionInput.placeholder = 'Add movie description'
 
+  let commentInput = document.createElement('input')
+  commentInput.name = 'description'
+  commentInput.placeholder = 'Add movie comment'
+
   let formMoviebtn = document.createElement('button')
   formMoviebtn.type = 'submit'
   formMoviebtn.textContent = 'submit'
 
-  movieForm.append(titleInput, thumbnailInput, descriptionInput, formMoviebtn)
+  movieForm.append(titleInput, thumbnailInput, descriptionInput, commentInput, formMoviebtn)
   mainEl.append(movieForm)
 
 
 }
 
 getMoviedata()
+renderNewMovie()
 
 function renderHeader() {
   let mainEl = document.querySelector('#app')
@@ -178,11 +214,13 @@ function render() {
   mainEl.textContent = ''
 
   renderHeader()
-
   renderNewMovie()
 
   if (state.selectedMovie === null) renderMovieList()
   else renderMovieDetails()
+
+  
+
 
 }
 
